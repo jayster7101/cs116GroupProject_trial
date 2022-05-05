@@ -130,11 +130,11 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
    matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
     //PASS IN SIZE
   int SIZE = 5;
-  int current_capacity;
+  int current_capacity = 0;
   gas = gas - matrix[0][0].get_gallons();
   Position<int> temp = current;
   temp.set_value(100000);
-  while( gas > 0 )//|| current_capacity < capacity)
+  while( gas > 0 && current_capacity < capacity)
   {
         Position <int> picked(0);
         Position <int> up = temp.next_s( temp.get_x(),  (temp.get_y() - 1),  SIZE,  matrix);

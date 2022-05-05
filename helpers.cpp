@@ -125,14 +125,16 @@ void parse_line(std::string line, int position, int size, Node** matrix)
 
 void path_find_s(double &gas, int capacity, Node** matrix, Position <int> current)
 {
+  matrix[0][0].set_order(1);
+  int count = 2;
    matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
     //PASS IN SIZE
-    int SIZE = 5;
-  int current_capacity;
+  int SIZE = 5;
+  int current_capacity = 0;
   gas = gas - matrix[0][0].get_gallons();
   Position<int> temp = current;
   temp.set_value(100000);
-  while( gas > 0 )//|| current_capacity < capacity)
+  while( gas > 0 && current_capacity < capacity)
   {
         Position <int> picked(0);
         Position <int> up = temp.next_s( temp.get_x(),  (temp.get_y() - 1),  SIZE,  matrix);
@@ -154,9 +156,11 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
                 std::cout << "swap";
             }
         }
+        matrix[picked.get_x()][picked.get_y()].set_order(count);
+        count++;
         std::cout << "\n-------------------------------------\n";
-        gas -= matrix[picked.get_x()][picked.get_x()].get_gallons();
-        capacity -= matrix[picked.get_x()][picked.get_x()].get_served();
+        gas -= matrix[picked.get_x()][picked.get_y()].get_gallons();
+        capacity -= matrix[picked.get_x()][picked.get_y()].get_served();
         matrix[picked.get_x()][picked.get_y()].set_visited(1);
         temp = picked;
         std::cout << temp.get_value();
@@ -176,3 +180,40 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
     
 
 }
+
+// basic map
+// void print_map(Node** matrix)
+// {
+//   for(int i = 0; i < 5; i++)
+//   {
+//     for(int j = 0; j < 5; j++)
+//       {
+//         if(matrix[i][j].get_visited() == 0)
+//         {
+//           std::cout << "[" << std::setfill('0') << std::setw(2) << 0 << "]";
+//         }
+//         else std::cout << "[" << std::setfill('0') << std::setw(2) << 1 << "]";
+//       }
+//     std::cout << "\n";
+//   }
+// }
+
+
+void print_map(Node** matrix)
+{
+  for(int i = 0; i < 5; i++)
+  {
+    for(int j = 0; j < 5; j++)
+      {
+        std::cout << "[" << std::setfill('0') << std::setw(2) << matrix[i][j].get_order() << "]";
+      //   if(matrix[i][j].get_visited() == 0)
+      //   {
+      //     std::cout << "[" << std::setfill('0') << std::setw(2) << 0 << "]";
+      //   }
+      //   else std::cout << "[" << std::setfill('0') << std::setw(2) << matrix[i][j].get_order() << "]";
+       }
+      
+    std::cout << "\n";
+  }
+}
+ 

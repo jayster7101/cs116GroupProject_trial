@@ -11,10 +11,13 @@ class Node
     int get_served() ;
     void set_visited(int);
     int get_visited();
+    int get_order();
+    void set_order(int);
 
     private:
     double gallons;
     int served;
     int visited;
+    int order;
 };
 #endif

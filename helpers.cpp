@@ -125,6 +125,7 @@ void parse_line(std::string line, int position, int size, Node** matrix)
 
 void path_find_s(double &gas, int capacity, Node** matrix, Position <int> current)
 {
+   matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
     //PASS IN SIZE
     int SIZE = 5;
   int current_capacity;

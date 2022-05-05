@@ -29,8 +29,11 @@ class Position
     int get_x();
     int get_y();
     void set_value(T);
+    int get_order();
+    void set_order(int);
 
   private:
+    int order;
     int x;
     int y;
     T value; // change to T if creating a template class
@@ -55,6 +58,7 @@ Position<T>::Position(T value)
   //dynamically assign x and y later
   x = 0;
   y = 0;
+  order = 1;
   this->value = value;
 };
 // /**

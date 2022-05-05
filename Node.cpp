@@ -4,12 +4,14 @@
         gallons = 0;
         served = 0;
         visited = 0;
+        order = 0;
     }
     Node::Node(double _gallons, int _served)
     {
         gallons = _gallons;
         served = _served;
         visited = 0;
+        order = 0;
     }
     void Node::set_gallons(double _gallons)
     {
@@ -35,3 +37,12 @@
     {
         return visited;
     } 
+
+void Node:: set_order(int o)
+{
+  order = o;
+}
+
+
+int Node::get_order()
+{return order;}

@@ -1,0 +1,3 @@
+Jayden (update) Data:(03/03/2022) Time:(7:40pm)
+* the main.cpp is super basic but functions. the main goal was only trying to read the data in and assign it to the matrix 
+* ive had many issues with the template class but have got it to compile with out error but haven't implemented it 

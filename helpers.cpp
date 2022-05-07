@@ -130,12 +130,14 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
    matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
     //PASS IN SIZE
   int SIZE = 5;
+  
   int current_capacity = 0;
   gas = gas - matrix[0][0].get_gallons();
   Position<int> temp = current;
   temp.set_value(100000);
   while( gas > 0 && current_capacity < capacity)
   {
+        bool swap = false;
         Position <int> picked(0);
         Position <int> up = temp.next_s( temp.get_x(),  (temp.get_y() - 1),  SIZE,  matrix);
         Position <int> up_right = temp.next_s( temp.get_x() + 1,  (temp.get_y() - 1),  SIZE,  matrix);
@@ -150,10 +152,12 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
         {   
             
             std::cout << "\nvalues : "<< arr[i].get_value() ;
+            if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited";} 
             if(picked.get_value() < arr[i].get_value() &&  arr[i].get_value()!=-1 && matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0)  
             {
-                picked = arr[i];
-                std::cout << "swap";
+                picked = arr[i]; // next position
+                std::cout << " swap";
+                swap = true;
             }
         }
         matrix[picked.get_x()][picked.get_y()].set_order(count);
@@ -162,9 +166,10 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
         gas -= matrix[picked.get_x()][picked.get_y()].get_gallons();
         capacity -= matrix[picked.get_x()][picked.get_y()].get_served();
         matrix[picked.get_x()][picked.get_y()].set_visited(1);
-        temp = picked;
-        std::cout << temp.get_value();
+        std::cout << picked.get_value();
         std::cout << "\n-------------------------------------\n";
+        
+        if(swap){temp = picked;}else {matrix[0][0].set_order(1);gas = -1;} //current to next swap if we find a square to swap to
 
     /**
      * @brief 
@@ -180,6 +185,58 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
     
 
 }
+
+void path_find_g(double &gas, int capacity, Node** matrix, Position <double> current)
+{
+  matrix[0][0].set_order(1);
+  int count = 2;
+  matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
+    //PASS IN SIZE
+  int SIZE = 5;
+  int current_capacity = 0;
+  gas = gas - matrix[0][0].get_gallons();
+  Position<double> temp = current;
+  temp.set_value(100000);
+  while( gas > 0 && current_capacity < capacity)
+  {     
+        bool swap = false;
+        Position <double> picked(1000);
+        Position <double> up = temp.next_g( temp.get_x(),  (temp.get_y() - 1),  SIZE,  matrix);
+        Position <double> up_right = temp.next_g( temp.get_x() + 1,  (temp.get_y() - 1),  SIZE,  matrix);
+        Position <double> right = temp.next_g( temp.get_x() + 1,  (temp.get_y()),  SIZE,  matrix);
+        Position <double> right_down = temp.next_g( temp.get_x() + 1 ,  (temp.get_y() + 1),  SIZE,  matrix);
+        Position <double> down = temp.next_g( temp.get_x(),  (temp.get_y() + 1),  SIZE,  matrix);
+        Position <double> left_down = temp.next_g( temp.get_x() - 1,  (temp.get_y() + 1),  SIZE,  matrix);
+        Position <double> left = temp.next_g( temp.get_x() -1 ,  (temp.get_y() ),  SIZE,  matrix);
+        Position <double> left_up = temp.next_g( temp.get_x() -1,  (temp.get_y() +1 ),  SIZE,  matrix);
+        Position<double> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
+        for(int i = 0; i < 8; i++)
+        {   
+            
+            std::cout << "\nvalues : "<< arr[i].get_value() ;
+            if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited";} 
+            if(picked.get_value() > arr[i].get_value() &&  arr[i].get_value()!=-1 && matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0)  
+            {
+                picked = arr[i];
+                std::cout << "swap";
+                swap = true;
+            }
+        }
+        matrix[picked.get_x()][picked.get_y()].set_order(count);
+        count++;
+        std::cout << "\n-------------------------------------\n";
+        gas -= matrix[picked.get_x()][picked.get_y()].get_gallons();
+        capacity -= matrix[picked.get_x()][picked.get_y()].get_served();
+        matrix[picked.get_x()][picked.get_y()].set_visited(1);
+        if(swap){temp = picked;}
+        std::cout << picked.get_value();
+        std::cout << "\n-------------------------------------\n";
+        if(swap){temp = picked;}else { matrix[0][0].set_order(1);gas = -1;}
+  }
+}
+
+
+
 
 // basic map
 // void print_map(Node** matrix)
@@ -216,4 +273,96 @@ void print_map(Node** matrix)
     std::cout << "\n";
   }
 }
- 
+
+
+void get_trucks(double &gas, int &capacity)
+{
+  bool truckchoice = whichtruck();
+  if (truckchoice)
+  {
+    display_truck();
+    our_truck(gas, capacity);
+  }
+  else
+  {
+    own_truck(gas, capacity);
+  }
+}
+
+bool whichtruck()
+{
+  std::string input;
+  std::cout<<"Would you like to:\n";
+  std::cout<<"1. Use one of our trucks\n";
+  std::cout<<"2. Use your own truck\n";
+  while (true)
+    {
+      std::cout<<"(please choose '1' or '2')\n";
+      std::cin>>input;
+      if (input=="1")
+      {
+        return true;
+      }
+      else if (input == "2")
+      {
+        return false;
+      }
+      else 
+      {
+        std::cout<<"Error. ";
+      }
+    }
+}
+
+void display_truck()
+{
+  std::cout << "\nWhich truck would you like to select?\n";
+  std::cout<<"\n-Truck 1-\nFuel Tank Capacity: 7 gallons\nAmount Of People That Can Be Served: 250\n";
+  std::cout<<"\n-Truck 2-\nFuel Tank Capacity: 10 gallons\nAmount Of People That Can Be Served: 480\n";
+  std::cout<<"\n-Truck 3-\nFuel Tank Capacity: 15 gallons\nAmount Of People That Can Be Served: 650\n";
+}
+
+bool our_truck(double &gas, int &capacity)
+{
+  std::string input;
+  while (true)
+    {
+      std::cout << "(Please enter '1','2' or '3')\n\n";
+      std::cin >> input;
+      if (input == "1")
+      {
+        gas = 7;
+        capacity = 250;
+        return true;
+      }
+      else if (input == "2")
+      {
+        gas = 10;
+        capacity = 480;
+        return true;
+      }
+      else if (input == "3")
+      {
+        gas = 15;
+        capacity = 650;
+        return true;
+      }
+      else
+      {
+        std::cout << "Error. \n";
+      }
+    }
+}
+
+void own_truck(double &gas, int &capacity)
+{
+  double input1;
+  int input2;
+  std::cout << " - For Your Truck -\n";
+  std::cout <<"Enter fuel tank capacity (in gallons): ";
+  std::cin>>input1;
+  std::cout << "Enter amount of people that can be served: ";
+  std::cin>>input2;
+  gas = input1;
+  capacity = input2;
+}

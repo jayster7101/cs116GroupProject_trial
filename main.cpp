@@ -2,14 +2,14 @@
 
  int main()
  {  
-    double gas = 12;
+    double gas;
     int SIZE = 5;
-    int capacity = 250;
+    int capacity;
     Node** matrix = new Node*[SIZE];
     std::string _file = get_file();
     read_line(_file, matrix);
-     Position<int> start(0);
-     path_find_s(gas,capacity,matrix,start);
+    get_trucks(gas,capacity);
+    Position<double> start(0);
+    path_find_g(gas,capacity,matrix,start);
     print_map( matrix);
-
  }

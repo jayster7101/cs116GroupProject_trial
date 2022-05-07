@@ -87,18 +87,18 @@ Position<T> Position<T>::next_s(int _x, int _y, int SIZE, Node** matrix) // when
 };
 
 template<class T>
-Position<T> next_g(int x, int y, int SIZE, Node** matrix) // when passing in x and y values,  call function like this Position<type>next( <current x position +- # >, <current y position +- #>, T)
+Position<T> Position<T>::next_g(int _x, int _y, int SIZE, Node** matrix) // when passing in x and y values,  call function like this Position<type>next( <current x position +- # >, <current y position +- #>, T)
 {// lets try and get the constructor working first 
     Position<T> temp(10000);
-    if( ( x >= 0 ) && ( x < SIZE ) && ( y >= 0 ) && (y < SIZE ) ) // if in bounds of array continue 
+    if( ( _x >= 0 ) && ( _x < SIZE ) && ( _y >= 0 ) && (_y < SIZE ) ) // if in bounds of array continue 
     {
-        temp->x = x; // change 
-        temp->y = y;
-        temp->value = matrix[x][y].get_gallons();
+        temp.x = _x; // change 
+        temp.y = _y;
+        temp.value = matrix[_x][_y].get_gallons();
     }
     else
     {
-        temp->value = -1; // means that no spot exists , x and y coordinates will be the same from which parent node calls, each iteration of algo will have parent node, which is the previous selected node 
+        temp.value = -1; // means that no spot exists , x and y coordinates will be the same from which parent node calls, each iteration of algo will have parent node, which is the previous selected node 
     }
     return temp; // returns a position type with new data or returns the parent node aka prevous iteration nodes x and y values, but will have value set to -1
 };

@@ -12,3 +12,6 @@ get_trucks(double gas, int served)
   function:
 
 }
+
+
+the swap variable gets removed later when we do multilayer pathfinding

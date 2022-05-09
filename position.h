@@ -47,19 +47,19 @@ class Position
 //   value = _value;
 // };
 template<typename T>
-void Position<T>::set_value(T value)
+void Position<T>::set_value(T _value)
 {
-    this->value = value;
+    value = _value;
 }
 
 template<class T>
-Position<T>::Position(T value)
+Position<T>::Position(T _value)
 {
   //dynamically assign x and y later
   x = 0;
   y = 0;
   order = 1;
-  this->value = value;
+  value = _value;
 };
 // /**
 //  * @warning when calling this function, be sure to initialize 

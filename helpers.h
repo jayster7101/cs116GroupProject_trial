@@ -20,6 +20,10 @@ void display_truck();
 bool our_truck(double &gas, int &capacity);
 void own_truck(double &gas, int &capacity);
  
+template<typename T>
+Position<T> find_g(Position<T>,int,int,Node**);
+template<typename T>
+Position<T> find_s(Position<T>,int,int,Node**);
 
 
 #endif

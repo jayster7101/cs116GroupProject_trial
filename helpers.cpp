@@ -212,16 +212,16 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
  * @param matrix 
  * @param current 
  */
-void path_find_g(double &gas, int capacity, Node** matrix, Position <double> current,int SIZE)
+
+void path_find_g(double &gas, int capacity, Node** matrix, Position <double> current, int SIZE)
 {
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = gas;
-  int itter; // iteration of going back to [0,0]
+  int itter = 0; // iteration of going back to [0,0]
   matrix[0][0].set_order(1); // sets first node to visited 
   int count = 2; // this is incremented and sets node.order to which order it is picked 
   matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
-
   int depth = 1; // depth is the search depth, its only incremented when the algo cant find a position at a depth of 1  
   int current_capacity = 0;
   trip_gas = trip_gas - matrix[0][0].get_gallons(); // takes away the cost at going to [0,0]
@@ -229,27 +229,7 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
   temp.set_value(100000); // sets a very high value so that its value is never picked 
   while( trip_gas > 0 && current_capacity < capacity && itter < 3)
   {     
-        Position <double> picked(1000);//sets a very high value so that its value is never picked 
-        //These lines fetch the data from all of the nodes surrounding the position of temp  
-        Position <double> up = temp.next_g( temp.get_x(),  (temp.get_y() - depth),  SIZE,  matrix);
-        Position <double> up_right = temp.next_g( temp.get_x() + depth,  (temp.get_y() - depth),  SIZE,  matrix);
-        Position <double> right = temp.next_g( temp.get_x() + depth,  (temp.get_y()),  SIZE,  matrix);
-        Position <double> right_down = temp.next_g( temp.get_x() + depth ,  (temp.get_y() + depth),  SIZE,  matrix);
-        Position <double> down = temp.next_g( temp.get_x(),  (temp.get_y() + depth),  SIZE,  matrix);
-        Position <double> left_down = temp.next_g( temp.get_x() - depth,  (temp.get_y() + depth),  SIZE,  matrix);
-        Position <double> left = temp.next_g( temp.get_x() -depth ,  (temp.get_y() ),  SIZE,  matrix);
-        Position <double> left_up = temp.next_g( temp.get_x() -depth,  (temp.get_y() +depth ),  SIZE,  matrix);
-        Position<double> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
-        for(int i = 0; i < 8; i++) // finding the lowest amount of gas used
-        {   
-            std::cout << "values : "<< arr[i].get_value() ;
-            if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited\n";} 
-            if( ( picked.get_value() > arr[i].get_value() ) && ( arr[i].get_value()!=-1 ) && ( matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0 ) )  
-            {
-                picked = arr[i];
-                std::cout << "swap\n";
-            }
-        }
+    Position<double> picked = find_g(temp,depth,SIZE,matrix); // finds the best decision / position to go to
         if(picked.get_value() != 1000) // checks for algo being stuck in a corner 
         {
           if(depth != 1)
@@ -263,11 +243,11 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
             // so storing each depth until finding a working one or deleting it after none are found 
 
           } 
-          depth = 1;
+          depth = 1; // sets depth back to 1 because a valid postion was found 
           std::cout << "\n-------------------------------------\n";
-          trip_gas -= matrix[picked.get_x()][picked.get_y()].get_gallons();
-          current_capacity += matrix[picked.get_x()][picked.get_y()].get_served();
-          if(trip_gas > 0 && current_capacity < capacity) // if gas or current capacity was excceded, then dont actually count that node 
+          trip_gas -= matrix[picked.get_x()][picked.get_y()].get_gallons(); // subtracts gas at that position that was found 
+          current_capacity += matrix[picked.get_x()][picked.get_y()].get_served();// adds the amount served at the position that was found 
+          if(trip_gas > 0 && current_capacity < capacity) // if gas or current capacity was excceded, then we dont actually visit it beacause it not possible 
           {
             matrix[picked.get_x()][picked.get_y()].set_order(count);
             matrix[picked.get_x()][picked.get_y()].set_visited(1);
@@ -294,8 +274,8 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
         else // if stuck in a corner, search at a deeper depth 
         {
           std::cout << "\nchecking depth " << depth << "\n";
-          if(depth == SIZE-1) return;
-          depth++;
+          if(depth == SIZE) return; // return if no more possible depths are possible
+          depth++; // add depth 
         }
   }
   std::cout << "leaving now\n"; return;
@@ -431,4 +411,61 @@ void own_truck(double &gas, int &capacity)
   std::cin>>input2;
   gas = input1;
   capacity = input2;
+}
+
+
+
+
+template<typename T>
+ Position<T> find_g(Position<T> temp, int depth, int SIZE, Node** matrix)
+{ 
+  Position <double> picked(1000);//sets a very high value so that its value is never picked 
+  //These lines fetch the data from all of the nodes surrounding the position of temp  
+  Position <double> up = temp.next_g( temp.get_x(),  (temp.get_y() - depth),  SIZE,  matrix);
+  Position <double> up_right = temp.next_g( temp.get_x() + depth,  (temp.get_y() - depth),  SIZE,  matrix);
+  Position <double> right = temp.next_g( temp.get_x() + depth,  (temp.get_y()),  SIZE,  matrix);
+  Position <double> right_down = temp.next_g( temp.get_x() + depth ,  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> down = temp.next_g( temp.get_x(),  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> left_down = temp.next_g( temp.get_x() - depth,  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> left = temp.next_g( temp.get_x() -depth ,  (temp.get_y() ),  SIZE,  matrix);
+  Position <double> left_up = temp.next_g( temp.get_x() -depth,  (temp.get_y() +depth ),  SIZE,  matrix);
+  Position<double> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
+  for(int i = 0; i < 8; i++) // finding the lowest amount of gas used
+  {   
+    std::cout << "values : "<< arr[i].get_value() ;
+    if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited\n";} 
+    if( ( picked.get_value() > arr[i].get_value() ) && ( arr[i].get_value()!=-1 ) && ( matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0 ) )  
+    {
+      picked = arr[i];
+      std::cout << "swap\n";
+    }
+  }
+  return picked;
+}
+
+template<typename T>
+ Position<T> find_s(Position<T> temp, int depth, int SIZE, Node** matrix)
+{ 
+  Position <double> picked(1000);//sets a very high value so that its value is never picked 
+  //These lines fetch the data from all of the nodes surrounding the position of temp  
+  Position <double> up = temp.next_s( temp.get_x(),  (temp.get_y() - depth),  SIZE,  matrix);
+  Position <double> up_right = temp.next_s( temp.get_x() + depth,  (temp.get_y() - depth),  SIZE,  matrix);
+  Position <double> right = temp.next_s( temp.get_x() + depth,  (temp.get_y()),  SIZE,  matrix);
+  Position <double> right_down = temp.next_s( temp.get_x() + depth ,  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> down = temp.next_s( temp.get_x(),  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> left_down = temp.next_s( temp.get_x() - depth,  (temp.get_y() + depth),  SIZE,  matrix);
+  Position <double> left = temp.next_s( temp.get_x() -depth ,  (temp.get_y() ),  SIZE,  matrix);
+  Position <double> left_up = temp.next_s( temp.get_x() -depth,  (temp.get_y() +depth ),  SIZE,  matrix);
+  Position<double> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
+  for(int i = 0; i < 8; i++) // finding the lowest amount of gas used
+  {   
+    std::cout << "values : "<< arr[i].get_value() ;
+    if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited\n";} 
+    if( ( picked.get_value() > arr[i].get_value() ) && ( arr[i].get_value()!=-1 ) && ( matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0 ) )  
+    {
+      picked = arr[i];
+      std::cout << "swap\n";
+    }
+  }
+  return picked;
 }

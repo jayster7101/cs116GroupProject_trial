@@ -215,10 +215,12 @@ void path_find_s(double &gas, int capacity, Node** matrix, Position <int> curren
 
 void path_find_g(double &gas, int capacity, Node** matrix, Position <double> current, int SIZE)
 {
+  double gas_price = get_gas_price();
+  double total_gas_used;
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = gas;
-  int itter = 0; // iteration of going back to [0,0]
+  bool keep_going = true;
   matrix[0][0].set_order(1); // sets first node to visited 
   int count = 2; // this is incremented and sets node.order to which order it is picked 
   matrix[current.get_x()][current.get_y()].set_visited(1); // sets initial to 1 to stop from going again
@@ -227,7 +229,7 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
   trip_gas = trip_gas - matrix[0][0].get_gallons(); // takes away the cost at going to [0,0]
   Position<double> temp = current; // temp variable set to the postion thats passed in 
   temp.set_value(100000); // sets a very high value so that its value is never picked 
-  while( trip_gas > 0 && current_capacity < capacity && itter < 3)
+  while( trip_gas > 0 && current_capacity < capacity && keep_going)
   {     
     Position<double> picked = find_g(temp,depth,SIZE,matrix); // finds the best decision / position to go to
         if(picked.get_value() != 1000) // checks for algo being stuck in a corner 
@@ -241,11 +243,11 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
             // ex, lets say we find a good node to go to at a depth of 3, 
             // well then we need to subtract the gas at node of 1,2, and 3 depth away
             // so storing each depth until finding a working one or deleting it after none are found 
-
           } 
           depth = 1; // sets depth back to 1 because a valid postion was found 
           std::cout << "\n-------------------------------------\n";
           trip_gas -= matrix[picked.get_x()][picked.get_y()].get_gallons(); // subtracts gas at that position that was found 
+          total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
           current_capacity += matrix[picked.get_x()][picked.get_y()].get_served();// adds the amount served at the position that was found 
           if(trip_gas > 0 && current_capacity < capacity) // if gas or current capacity was excceded, then we dont actually visit it beacause it not possible 
           {
@@ -259,7 +261,7 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
           }
           else // go back 
           {
-            itter ++;
+            keep_going = continue_delivery(gas_price,total_gas_used);
             Position<double> back_to_start(1000);
             temp = back_to_start;
 
@@ -267,7 +269,6 @@ void path_find_g(double &gas, int capacity, Node** matrix, Position <double> cur
             //matrix[0][0].set_order(1);
             trip_gas = gas; //gas = -1;
             current_capacity = 0;
-            std::cout << "gas " << gas << "capacity " << current_capacity << " itter " << itter << "\n";
             //return;
           }
         } 
@@ -308,13 +309,8 @@ void print_map(Node** matrix)
   {
     for(int j = 0; j < 5; j++)
       {
-        std::cout << "[" << std::setfill('0') << std::setw(2) << matrix[i][j].get_order() << "]";
-      //   if(matrix[i][j].get_visited() == 0)
-      //   {
-      //     std::cout << "[" << std::setfill('0') << std::setw(2) << 0 << "]";
-      //   }
-      //   else std::cout << "[" << std::setfill('0') << std::setw(2) << matrix[i][j].get_order() << "]";
-       }
+        std::cout << matrix[i][j];
+      }
       
     std::cout << "\n";
   }
@@ -469,3 +465,57 @@ template<typename T>
   }
   return picked;
 }
+
+
+double get_gas_price()
+{
+  double gas;
+  std::cout << "Whats the current gas price in your area?\n> ";
+  std::cin >> gas;
+  while(std::cin.fail() || gas < 0 )
+    {
+      std::cin.ignore(100,'\n');
+      std::cout << "Sorry, that is not a valid price\nPlease enter the current price of gas in us dollars\n> ";
+      std::cin.clear();
+      std::cin >> gas;
+    }
+  return gas;
+}
+bool continue_delivery(double price, double used)
+{
+  std::cout << "You have gone back to refill, the current amount of gas used in todays trip is " << used << " gallons. This has costed you " << price*used   << "$\nWould you like to go back out and try and serve more people? Yes or No\n>";
+  return enter();
+}
+
+
+// supposed to find nearest gas station 
+template<typename T>
+Position<T> nearest_gas_station(Position<T> current_position, int size, Node** matrix)
+{
+  Position<T> optimal(0);
+  Position<T> top_left(0,0);
+  Position<T> top_right(size,0);
+  Position<T> bottom_left(0,size);
+  Position<T> bottom_right(size,size);
+  Position<T> arr[] = {top_left, top_right, bottom_left, bottom_right};
+  for(int i = 0; i < size; i++)
+  {
+    if(current_position.get_x() < size/2 && current_position.get_y() < size/2)
+    {
+     // return Position<T> re(0,0,0);
+    }
+  }
+  
+  //top left
+  //top right
+  //bottom left
+  //bottom right
+  // if current position is in impacted spot, generate random num from 0-10 and then 2%random number and then go to one 
+}
+
+
+std::ostream& operator<<(std::ostream& out,  Node& classObj)
+{
+  out << "[" << std::setfill('0') << std::setw(2) << classObj.get_order() << "]";
+  return out;
+};

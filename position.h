@@ -21,6 +21,7 @@ class Position
     //Position<T> (T _value);
     // Position(T _value,int x,int y); *** working ***
     Position(T value);
+    Position(int x, int y);
     T get_value(); // will be used to get the value wether it be int or double
 
     Position<T> next_s(int, int, int,  Node**);
@@ -61,6 +62,17 @@ Position<T>::Position(T _value)
   order = 1;
   value = _value;
 };
+
+template<class T>
+Position<T>::Position(int _x, int _y)
+{
+  //dynamically assign x and y later
+  x = _x;
+  y = _y;
+  order = 1;
+  value = 0;
+};
+
 // /**
 //  * @warning when calling this function, be sure to initialize 
 //  * 
@@ -117,6 +129,7 @@ T Position<T>::get_value()
 {
     return value;
 }
+
 
 #endif
 

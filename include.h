@@ -8,4 +8,5 @@
 #include <sstream>
 #include <iomanip>
 #include "helpers.h"
+#include "trucks.h"
 #endif 

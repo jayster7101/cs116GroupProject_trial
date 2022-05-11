@@ -8,8 +8,8 @@
     int SIZE = get_size(_file);
     Node** matrix = new Node*[SIZE];
     read_line(_file, matrix);
-    get_trucks(gas,capacity);
-    Position<double> start(0);
-    path_find_g(gas,capacity,matrix,start,SIZE);
-    print_map( matrix);
+    D_truck user = get_trucks();
+    path(user,matrix,SIZE);
+
+    print_map(matrix);
  }

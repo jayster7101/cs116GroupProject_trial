@@ -24,12 +24,6 @@ Needed
   -go to gas station 
   - use that as new starting point so not [0,0] as implimented 
 
-(4) get user input and call algo based on user input 
- two valid function calls
 
- path_find_g(gas,capacity,matrix,start,SIZE); 
- path_find_s(gas,capacity,matrix,start,SIZE);
-
-I think this is done
 
 (5)animation 

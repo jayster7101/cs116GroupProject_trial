@@ -4,7 +4,7 @@ std::string get_file()
    {
        int count = 0;
        std::string _file;
-       std::cout << "Please enter the file name.\n-> ";
+       std::cout << "Please enter the file name that stores the data for todays route.\n-> ";
        std::cin >> _file;
        std::ifstream file;
        file.open(_file);
@@ -30,6 +30,8 @@ std::string get_file()
                count = 0;
            }
        }
+       std::cout << "Great, we got the file!\n.\n.\nOpening :" << _file << "\n";
+       std::cout << "*************************************************************************************\n";
        return _file;
    };
 
@@ -60,15 +62,63 @@ std::string get_file()
    return return_value;
 } 
 
+bool greet()
+{
+  std::cout << "Welcome to J.A.M, a voluntary food delivery service software. Our mission is to help fight hunger and create an impact on society.\nTo learn more about our mission statement head to WWW.JAMfoodie.io\n";
+  std::cout << "Are you a driver for the company? yes or no\n> ";
+  bool driver = enter();
+  if(driver)
+  {
+    std::cout<<"Would you like to start your delivery route finding software right now? yes or no\n> ";
+    bool start = enter();
+    if(start)
+    {
+      std::cout << "Okay you Drive safe now!\n";
+      return true;
+    }
+    else
+    {
+      std::cout << "Have a good day, we hope to be seeing you soon.\n";
+      return false;
+    }
+  }
+  else
+  {
+
+     std::cout <<"    *                 *\n";
+     std::cout <<"     **             **\n";
+     std::cout <<"      ***          ***\n";
+     std::cout <<"       ****      ****\n";
+     std::cout <<"        *****  *****\n";
+     std::cout <<"        ***********\n";
+     std::cout <<"        ***********\n";
+     std::cout <<"        ***********\n";
+     std::cout <<"        *****  *****\n";
+     std::cout <<"       ****      ****\n";
+     std::cout <<"      ***          ***\n";
+     std::cout <<"     **             **\n";
+     std::cout <<"    *                 *\n";
+     std::cout << "ACCESS DENIED, NOT A DRIVER\n";
+     return false;
+      
+     
+  }
+}
+
+bool again()
+{
+  std::cout << "Would you like to run the program again? yes or no\n> ";
+  return enter();
+}
 
 void path(D_truck user, Node** matrix, int SIZE)
 {
-    std::cout<< "With the data that has been provided, we can run three different test on the data \n";
-    std::cout<< "Option one will find the most fuel efficient route but will not maximize people served \n";
-    std::cout<< "Option two will find the route that serves the most people but will not maximize fuel \n";
-    std::cout<< "Option three will cover the most area for however many gallons of gas that you specify \n";
-    std::cout << "Please type in the interger 1,2,3 to choose the path you would like to choose \n";
-    int decision;
+    std::cout<< "With the data that has been provided, we are able to find three different routes\n";
+    std::cout<< "[1] one will find the most fuel efficient route but will not maximize people served \n";
+    std::cout<< "[2] two will find the route that serves the most people but will not maximize fuel \n";
+    std::cout<< "[3] three will cover the most area for however many gallons of gas that you specify \n";
+    std::cout << "(Please enter '1','2' or '3') so that we can create your driving directions based on todays needs\n-> ";
+    int decision = 0;
     std::cin >> decision;
     while(std::cin.fail() || decision <= 0 || decision > 3) // only allows the user to enter a number of 1,2,3. acts as simple input validation 
     {
@@ -77,7 +127,6 @@ void path(D_truck user, Node** matrix, int SIZE)
         std::cout << "It Seems like you didn't provide a propper choice, please try again";
         std::cin >> decision;
     }
-    std::cout<<"Before return ";
   if (decision == 1)
   {
     Position<double> start(0);
@@ -90,8 +139,8 @@ void path(D_truck user, Node** matrix, int SIZE)
   }
   else if (decision == 3)
   {
-    Position<double> start(0);
-    path_find_g(user, matrix, start, SIZE);
+     Position<double> start(0);
+     path_find_g(user, matrix, start, SIZE);
   }
 
 }
@@ -212,6 +261,7 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
 {
   double gas_price = get_gas_price();
   double total_gas_used;
+  int total_served;
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = truck.get_gas();
@@ -231,36 +281,37 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
         {
           if(depth != 1)
           {
-            std::cout << "we are past the first depth and are at a depth of:" << depth << " is where a valid node was found\n";
-            //depth_gas += matrix[picked.get_x()][picked.get_y()].get_gallons();
-            //depth_gas = 0;
+            //std::cout << "we are past the first depth and are at a depth of:" << depth << " is where a valid node was found\n";
+            depth_gas += matrix[picked.get_x()][picked.get_y()].get_gallons();
+            depth_gas = 0;
             // needs to store the depths from previous iterations that are
             // ex, lets say we find a good node to go to at a depth of 3, 
             // well then we need to subtract the gas at node of 1,2, and 3 depth away
             // so storing each depth until finding a working one or deleting it after none are found 
           } 
           depth = 1; // sets depth back to 1 because a valid postion was found 
-          std::cout << "\n-------------------------------------\n";
+          //std::cout << "\n-------------------------------------\n";
           trip_gas -= matrix[picked.get_x()][picked.get_y()].get_gallons(); // subtracts gas at that position that was found 
-          total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
           current_capacity += matrix[picked.get_x()][picked.get_y()].get_served();// adds the amount served at the position that was found 
           if(trip_gas > 0 && current_capacity < truck.get_capacity()) // if gas or current capacity was excceded, then we dont actually visit it beacause it not possible 
           {
+            total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
+            total_served += matrix[picked.get_x()][picked.get_y()].get_served();
             matrix[picked.get_x()][picked.get_y()].set_order(count);
             matrix[picked.get_x()][picked.get_y()].set_visited(1);
             temp = picked;
             count++;
-            std::cout << picked.get_value();
-            std::cout << "\n-------------------------------------\n";
-            std::cout << "\ncurrent level of trip_gas: " << trip_gas << "\n";
+            //std::cout << picked.get_value();
+            //std::cout << "\n-------------------------------------\n";
+            //std::cout << "\ncurrent level of trip_gas: " << trip_gas << "\n";
           }
           else // go back 
           {
-            keep_going = continue_delivery(gas_price,total_gas_used);
-            Position<int> back_to_start(1000);
+            keep_going = continue_delivery(gas_price,total_gas_used,total_served);
+            Position<int> back_to_start(0);
             temp = back_to_start;
 
-            std::cout << "trip_gas has run out at [" << picked.get_x() << "," << picked.get_y() << "]\n";
+            //std::cout << "trip_gas has run out at [" << picked.get_x() << "," << picked.get_y() << "]\n";
             //matrix[0][0].set_order(1);
             trip_gas = truck.get_gas();
             current_capacity = 0;
@@ -269,12 +320,12 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
         } 
         else // if stuck in a corner, search at a deeper depth 
         {
-          std::cout << "\nchecking depth " << depth << "\n";
+          //std::cout << "\nchecking depth " << depth << "\n";
           if(depth == SIZE) return; // return if no more possible depths are possible
           depth++; // add depth 
         }
   }
-  std::cout << "leaving now\n"; return;
+  //std::cout << "leaving now\n"; return;
 }
 
 
@@ -295,7 +346,7 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
 /**
  * @brief main algorthim function 
  * this function gets the surrounding data at one depth from any particular node 
- * once the algo finds that smallest node, it subtracst the has used at that node 
+ * once the algo finds that smallest node, it subtracts the has used at that node 
  * 
  * @param gas 
  * @param capacity 
@@ -307,6 +358,7 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
 {
   double gas_price = get_gas_price();
   double total_gas_used;
+  int total_served;
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = truck.get_gas();
@@ -326,7 +378,7 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
         {
           if(depth != 1)
           {
-            std::cout << "we are past the first depth and are at a depth of:" << depth << " is where a valid node was found\n";
+            //std::cout << "we are past the first depth and are at a depth of:" << depth << " is where a valid node was found\n";
             depth_gas += matrix[picked.get_x()][picked.get_y()].get_gallons();
             depth_gas = 0;
             // needs to store the depths from previous iterations that are
@@ -335,27 +387,28 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
             // so storing each depth until finding a working one or deleting it after none are found 
           } 
           depth = 1; // sets depth back to 1 because a valid postion was found 
-          std::cout << "\n-------------------------------------\n";
+          //std::cout << "\n-------------------------------------\n";
           trip_gas -= matrix[picked.get_x()][picked.get_y()].get_gallons(); // subtracts gas at that position that was found 
-          total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
           current_capacity += matrix[picked.get_x()][picked.get_y()].get_served();// adds the amount served at the position that was found 
           if(trip_gas > 0 && current_capacity < truck.get_capacity()) // if gas or current capacity was excceded, then we dont actually visit it beacause it not possible 
           {
+            total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
+            total_served += matrix[picked.get_x()][picked.get_y()].get_served();
             matrix[picked.get_x()][picked.get_y()].set_order(count);
             matrix[picked.get_x()][picked.get_y()].set_visited(1);
             temp = picked;
             count++;
-            std::cout << picked.get_value();
-            std::cout << "\n-------------------------------------\n";
-            std::cout << "\ncurrent level of trip_gas: " << trip_gas << "\n";
+            //std::cout << picked.get_value();
+            //std::cout << "\n-------------------------------------\n";
+            //std::cout << "\ncurrent level of trip_gas: " << trip_gas << "\n";
           }
           else // go back 
           {
-            keep_going = continue_delivery(gas_price,total_gas_used);
+            keep_going = continue_delivery(gas_price,total_gas_used,total_served);
             Position<double> back_to_start(1000);
             temp = back_to_start;
 
-            std::cout << "trip_gas has run out at [" << picked.get_x() << "," << picked.get_y() << "]\n";
+            //std::cout << "trip_gas has run out at [" << picked.get_x() << "," << picked.get_y() << "]\n";
             //matrix[0][0].set_order(1);
             trip_gas = truck.get_gas();
             current_capacity = 0;
@@ -364,12 +417,12 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
         } 
         else // if stuck in a corner, search at a deeper depth 
         {
-          std::cout << "\nchecking depth " << depth << "\n";
+          //std::cout << "\nchecking depth " << depth << "\n";
           if(depth == SIZE) return; // return if no more possible depths are possible
           depth++; // add depth 
         }
   }
-  std::cout << "leaving now\n"; return;
+  //std::cout << "leaving now\n"; return;
 }
 
 
@@ -412,6 +465,7 @@ D_truck get_trucks()
   bool truckchoice = whichtruck();
   if (truckchoice)
   {
+
     display_truck();
     return our_truck();
   }
@@ -424,34 +478,48 @@ D_truck get_trucks()
 bool whichtruck()
 {
   std::string input;
-  std::cout<<"Would you like to:\n";
-  std::cout<<"1. Use one of our trucks\n";
-  std::cout<<"2. Use your own truck\n";
+  std::cout<<"For finding the best route we will need to know the type of truck you will be using.\n";
+  std::cout<<"[1] Useing one of our trucks\n";
+  std::cout<<"[2] Useing your own truck\n";
   while (true)
     {
-      std::cout<<"(please choose '1' or '2')\n";
+      std::cout<<"(please choose '1' or '2')\n-> ";
       std::cin>>input;
       if (input=="1")
       {
+        std::cout <<"*************************************************************************************\n";
         return true;
       }
       else if (input == "2")
       {
+        std::cout <<"*************************************************************************************\n";
         return false;
       }
       else 
       {
-        std::cout<<"Error. ";
+        std::cout<<"Error. \n";
       }
     }
 }
 
 void display_truck()
 {
-  std::cout << "\nWhich truck would you like to select?\n";
-  std::cout<<"\n-Truck 1-\nFuel Tank Capacity: 7 gallons\nAmount Of People That Can Be Served: 250\n";
-  std::cout<<"\n-Truck 2-\nFuel Tank Capacity: 10 gallons\nAmount Of People That Can Be Served: 480\n";
-  std::cout<<"\n-Truck 3-\nFuel Tank Capacity: 15 gallons\nAmount Of People That Can Be Served: 650\n";
+  Truck* basic;
+  D_truck* truck_1 = new D_truck(7,250);
+  D_truck* truck_2 = new D_truck(10,480);
+  D_truck* truck_3= new D_truck(15,650);
+  Truck* truck_arr[] = {basic, truck_1, truck_2, truck_3};
+  for(int i = 1; i < 4; i++)
+  {
+   // if(i == 0) truck_arr[0]->display();
+    std::cout << "Truck [" << i << "] specs :";
+    truck_arr[i]->display();
+  }
+
+  // std::cout << "\nWhich truck would you like to select?\n";
+  // std::cout<<"\n-Truck 1-\nFuel Tank Capacity: 7 gallons\nAmount Of People That Can Be Served: 250\n";
+  // std::cout<<"\n-Truck 2-\nFuel Tank Capacity: 10 gallons\nAmount Of People That Can Be Served: 480\n";
+  // std::cout<<"\n-Truck 3-\nFuel Tank Capacity: 15 gallons\nAmount Of People That Can Be Served: 650\n";
 }
 
 D_truck our_truck()
@@ -461,24 +529,27 @@ D_truck our_truck()
   std::string input;
   while (true)
     {
-      std::cout << "(Please enter '1','2' or '3')\n\n";
+      std::cout << "(Please enter '1','2' or '3')\n-> ";
       std::cin >> input;
       if (input == "1")
       {
         gas = 7;
         capacity = 250;
+        std::cout <<"*************************************************************************************\n";
         return D_truck(7,250);
       }
       else if (input == "2")
       {
         gas = 10;
         capacity = 480;
+        std::cout <<"*************************************************************************************\n";
         return D_truck(10,480);
       }
       else if (input == "3")
       {
         gas = 15;
         capacity = 650;
+        std::cout <<"*************************************************************************************\n";
        return D_truck(15,650);
       }
       else
@@ -493,24 +564,23 @@ D_truck own_truck()
   double input1;
   int input2;
   std::cout << " - For Your Truck -\n";
-  std::cout <<"Enter fuel tank capacity (in gallons): ";
+  std::cout <<"Enter fuel tank capacity (in gallons): -> ";
   std::cin>>input1;
-  std::cout << "Enter amount of people that can be served: ";
+  std::cout << "Enter amount of people that can be served: -> ";
   std::cin>>input2;
   while(std::cin.fail() || ( input1 < 0 ) || ( input2 < 0 ) )
     {
       std::cin.clear();
       std::cin.ignore(100,'\n');
-      std::cout << "Sorry it seems like you havent entered a correct value, please try again\n> ";
+      std::cout << "Sorry it seems like you haven't entered a correct value, please try again\n-> ";
       std::cout <<"Enter fuel tank capacity (in gallons): ";
       std::cin >> input1;
       std::cout << "Enter amount of people that can be served: ";
       std::cin>>input2;
     }
+    std::cout << "*************************************************************************************";
   return D_truck(input1,input2);
 }
-
-
 
 
 template<typename T>
@@ -529,17 +599,17 @@ template<typename T>
   Position<double> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
   for(int i = 0; i < 8; i++) // finding the lowest amount of gas used
   {   
-    std::cout << "values : "<< arr[i].get_value() ;
-    if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited";} 
     if( ( picked.get_value() > arr[i].get_value() ) && ( arr[i].get_value()!=-1 ) && ( matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0 ) )  
     {
       picked = arr[i];
-      std::cout << " swap";
     }
-    std::cout<<"\n";
   }
   return picked;
 }
+
+
+
+
 /*
 Changes I made:
 Switched some of the numbers to make it find the highest amount of people served instead of lowest.
@@ -560,15 +630,17 @@ template<typename T>
   Position<int> arr[] = {up, up_right,right,right_down,down,left_down,left,left_up};
   for(int i = 0; i < 8; i++) // finding the lowest amount of gas used
   {   
-    std::cout << "values : "<< arr[i].get_value() ;
-    if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){std::cout <<" visited";} 
+    //std::cout << "values : "<< arr[i].get_value() ;
+    if(matrix[arr[i].get_x()][arr[i].get_y()].get_visited()!=0){}//std::cout <<" visited";} 
     if( ( picked.get_value() < arr[i].get_value() ) && ( arr[i].get_value()!=-1 ) && ( matrix[arr[i].get_x()][arr[i].get_y()].get_visited()==0 ) )  
     {
       picked = arr[i];
-      std::cout << " swap";
-    }
-  std::cout<<"\n";
+      //std::cout << " swap";
+    } 
+  //std::cout<<"\n";
   }
+  if(picked.get_value() == 0) picked.set_value(1000);
+ // std::cout << "returning picked " << picked.get_value() ;
   return picked;
 }
 
@@ -576,20 +648,22 @@ template<typename T>
 double get_gas_price()
 {
   double gas;
-  std::cout << "Whats the current gas price in your area?\n> ";
+  std::cout << "Whats the current gas price in your area?\n-> ";
   std::cin >> gas;
   while(std::cin.fail() || gas < 0 )
     {
       std::cin.ignore(100,'\n');
-      std::cout << "Sorry, that is not a valid price\nPlease enter the current price of gas in us dollars\n> ";
+      std::cout << "Sorry, that is not a valid price\nPlease enter the current price of gas in us dollars\n-> ";
       std::cin.clear();
       std::cin >> gas;
     }
   return gas;
 }
-bool continue_delivery(double price, double used)
+bool continue_delivery(double price, double used, int served)
 {
-  std::cout << "You have gone back to refill, the current amount of gas used in todays trip is " << used << " gallons. This has costed you " << price*used   << "$\nWould you like to go back out and try and serve more people? Yes or No\n>";
+  std::cout << "*************************************************************************************\n";
+  std::cout << "You have gone back to refill, the current amount of gas used in todays trip is " << used << " gallons. This has costed you " << price*used   << "$ you have also served " << served << " people!\n";
+  std::cout << "Would you like to go back out and try and serve more people? Yes or No\n-> ";
   return enter();
 }
 
@@ -625,3 +699,5 @@ std::ostream& operator<<(std::ostream& out,  Node& classObj)
   out << "[" << std::setfill('0') << std::setw(2) << classObj.get_order() << "]";
   return out;
 };
+
+

@@ -20,10 +20,7 @@ Needed
 
 (2) add virtual to derived 
 
-(3) find nearest gas station *not working yet*
-  -go to gas station 
-  - use that as new starting point so not [0,0] as implimented 
 
 
 
-(5)animation 
+

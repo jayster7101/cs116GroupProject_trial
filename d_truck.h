@@ -9,6 +9,7 @@ public:
   D_truck(double,int);// overload to create a truck based on user input
   void set_capacity(int);
   int get_capacity();
+  virtual void display();
 private:
   int capacity;
 };

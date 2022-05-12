@@ -5,6 +5,8 @@
 
 std::string get_file();
 bool enter();
+bool greet();
+bool again();
 
 void path(D_truck, Node** matrix, int SIZE);
 
@@ -25,7 +27,7 @@ void display_truck();
 D_truck our_truck(); // returns one of the three predefined trucks
 D_truck own_truck();
 double get_gas_price(); // gets the current gas price from user 
-bool continue_delivery(double price, double used);
+bool continue_delivery(double price, double used, int served);
 bool enter();// gets the answer to yes and no questions
 
 // Template functions

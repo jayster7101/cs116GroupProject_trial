@@ -261,7 +261,7 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
 {
   double gas_price = get_gas_price();
   double total_gas_used;
-  int total_served;
+  int total_served=0;
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = truck.get_gas();
@@ -297,6 +297,7 @@ void path_find_s(D_truck truck, Node** matrix, Position <int> current, int SIZE)
           {
             total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
             total_served += matrix[picked.get_x()][picked.get_y()].get_served();
+            std::cout << "total served " << total_served << "\n";
             matrix[picked.get_x()][picked.get_y()].set_order(count);
             matrix[picked.get_x()][picked.get_y()].set_visited(1);
             temp = picked;
@@ -358,7 +359,7 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
 {
   double gas_price = get_gas_price();
   double total_gas_used;
-  int total_served;
+  int total_served = 0;
   double depth_gas = 0;
   int depth_capacity = 0;
   double trip_gas = truck.get_gas();
@@ -394,6 +395,7 @@ void path_find_g(D_truck truck, Node** matrix, Position <double> current, int SI
           {
             total_gas_used += matrix[picked.get_x()][picked.get_y()].get_gallons();
             total_served += matrix[picked.get_x()][picked.get_y()].get_served();
+            std::cout << "total_served " << total_served << "\n";
             matrix[picked.get_x()][picked.get_y()].set_order(count);
             matrix[picked.get_x()][picked.get_y()].set_visited(1);
             temp = picked;
